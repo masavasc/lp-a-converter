@@ -156,7 +156,12 @@
       font-size: 1.4em;
       color: var(--accent);
     }
-
+.disclaimer {
+  font-size: 0.85em;       /* 少し小さめの文字サイズ */
+  color: #666;             /* グレーで控えめに */
+  margin-top: 0.5em;       /* 上とのスペース */
+  line-height: 1.4;        /* 読みやすい行間 */
+}
     /*――― 制作者 ―――*/
     .creator {
       text-align: center;
@@ -207,7 +212,10 @@
       <span class="value" id="result">--</span>
       <span id="resultUnit"> nmol/L</span>
     </div>
-
+  <!-- 注意書き -->
+  <p class="disclaimer">
+    尚、測定値が低い場合には標準値がマイナスに表記されることがあります。
+  </p>
     <!-- クリアボタン -->
     <button type="button" id="clearBtn" class="btn btn-clear">入力内容をクリア</button>
 
