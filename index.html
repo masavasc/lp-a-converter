@@ -16,7 +16,6 @@
       --text:          #333;
     }
     * { box-sizing: border-box; }
-
     body {
       font-family: "Helvetica Neue", sans-serif;
       background: #fafafa;
@@ -24,14 +23,12 @@
       margin: 0;
       padding: 0;
     }
-
     .container {
       max-width: 420px;
       margin: 0 auto;
       padding: 1em;
     }
-
-    /*――― ヘッダー ―――*/
+    /* ヘッダー */
     .header {
       background: var(--header-bg);
       padding: 0.6em 1em;
@@ -50,8 +47,7 @@
       font-size: 1.4em;
       color: #fff;
     }
-
-    /*――― 説明文 ―――*/
+    /* 説明文 */
     .description {
       background: #fff;
       border: 2px solid var(--border);
@@ -65,8 +61,7 @@
       margin: 0;
       padding: 0;
     }
-
-    /*――― フォーム ―――*/
+    /* フォーム */
     form {
       background: #fff;
       border: 2px solid var(--border);
@@ -94,8 +89,7 @@
       display: none;
       margin-top: 0.3em;
     }
-
-    /*――― キット選択グリッド（2列×2行） ―――*/
+    /* キット選択グリッド（2列） */
     .kit-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -113,8 +107,7 @@
     .kit-grid input[type="radio"] {
       margin-right: 0.4em;
     }
-
-    /*――― ボタン ―――*/
+    /* ボタン */
     .btn {
       width: 100%;
       padding: 0.8em;
@@ -137,8 +130,7 @@
       color: #fff;
       margin-top: 0.5em;
     }
-
-    /*――― 結果表示 ―――*/
+    /* 結果表示 */
     .result-box {
       background: #fff;
       border: 2px solid var(--border);
@@ -156,13 +148,14 @@
       font-size: 1.4em;
       color: var(--accent);
     }
-.disclaimer {
-  font-size: 0.85em;       /* 少し小さめの文字サイズ */
-  color: #666;             /* グレーで控えめに */
-  margin-top: 0.5em;       /* 上とのスペース */
-  line-height: 1.4;        /* 読みやすい行間 */
-}
-    /*――― 制作者 ―――*/
+    /* 注意書き */
+    .disclaimer {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 0.5em;
+      line-height: 1.4;
+    }
+    /* 制作者 */
     .creator {
       text-align: center;
       font-size: 0.85em;
@@ -188,7 +181,7 @@
     <form id="calcForm">
       <div class="field">
         <label for="inputValue">測定値を入力（mg/dL）</label>
-        <input id="inputValue" type="number" step="any" placeholder="例：18">
+        <input id="inputValue" type="number" step="any" placeholder="例：120">
         <p id="inputError" class="error">有効な数値を入力してください</p>
       </div>
       <div class="field">
@@ -196,9 +189,9 @@
           <legend>検査キットを選択</legend>
           <div class="kit-grid">
             <label><input type="radio" name="kit" value="kitA">Sekisui</label>
-            <label><input type="radio" name="kit" value="kitB">Denka（国内）</label>
-            <label><input type="radio" name="kit" value="kitC">Denka（海外）</label>
-            <label><input type="radio" name="kit" value="kitD">Nittobo</label>
+            <label><input type="radio" name="kit" value="kitB">Denka-1</label>
+            <label><input type="radio" name="kit" value="kitC">Nittobo</label>
+            <label><input type="radio" name="kit" value="kitD">Roche</label>
           </div>
         </fieldset>
         <p id="kitError" class="error">キットを選択してください</p>
@@ -208,34 +201,40 @@
 
     <!-- 結果表示 -->
     <div class="result-box">
-      <span class="label">Lp(a) 標準値</span>
+      <span class="label">変換結果</span>
       <span class="value" id="result">--</span>
       <span id="resultUnit"> nmol/L</span>
     </div>
-  <!-- 注意書き -->
-  <p class="disclaimer">
-    尚、測定値が低い場合には標準値がマイナスに表記されることがあります。
-  </p>
+
+    <!-- 注意書き -->
+    <p class="disclaimer">
+      尚、測定値が低い場合には標準値がマイナスに表記されることがあります。<br>
+      また、計算結果が0.6以下の場合は「0.6未満」と表示されます。
+    </p>
+
     <!-- クリアボタン -->
     <button type="button" id="clearBtn" class="btn btn-clear">入力内容をクリア</button>
 
     <!-- 制作者 -->
-    <p class="creator">参考文献: Miida et al. JAT 2025;32:580-595</p>
+    <p class="creator">参考文献: J Atheroscler Thromb. 2025;32:580-595</p>
   </div>
 
   <script>
+    // キットごとの換算式
     const kitFormulas = {
       kitA: x => 3.77 * x - 2.39,
       kitB: x => 2.04 * x - 2.77,
       kitC: x => 2.40 * x - 8.64,
-      kitD: x => 2.08 * x - 2.73,
+      kitD: x => 0.75 * x + 1.11
     };
+    // 出力単位（すべて nmol/L）
     const kitUnits = {
       kitA: 'nmol/L',
       kitB: 'nmol/L',
       kitC: 'nmol/L',
       kitD: 'nmol/L'
     };
+
     const inputEl    = document.getElementById('inputValue');
     const inputErr   = document.getElementById('inputError');
     const kitErr     = document.getElementById('kitError');
@@ -248,12 +247,14 @@
       alert(msg);
     }
 
+    // 入力＆選択の状態でボタン有効化
     function refreshButtonState() {
       const hasVal = !isNaN(parseFloat(inputEl.value));
       const hasKit = !!document.querySelector('input[name="kit"]:checked');
       calcBtn.disabled = !(hasVal && hasKit);
     }
 
+    // インライン・バリデーション
     function validate() {
       let ok = true;
       if (inputEl.value.trim() === '' || isNaN(parseFloat(inputEl.value))) {
@@ -269,6 +270,7 @@
       return ok;
     }
 
+    // 計算処理
     function calculate() {
       if (!validate()) {
         showToast('入力内容を確認してください');
@@ -276,30 +278,37 @@
       }
       const x   = parseFloat(inputEl.value);
       const kit = document.querySelector('input[name="kit"]:checked').value;
+      // 一度だけ宣言
       const raw = kitFormulas[kit](x);
-  // ここから追加
-   let displayValue;
-  if (raw <= 0.6) {
-    displayValue = '0.6未満';
-  } else {
-    displayValue = raw.toFixed(2);
-  }
-  resultEl.textContent = displayValue;
+
+      // 0.6以下なら「0.6未満」、それ以外は小数点2桁
+      let displayValue;
+      if (raw <= 0.6) {
+        displayValue = '0.6未満';
+      } else {
+        displayValue = raw.toFixed(2);
+      }
+
+      resultEl.textContent   = displayValue;
       resultUnit.textContent = kitUnits[kit];
     }
 
+    // フォームクリア
     function clearForm() {
       inputEl.value = '';
       document.querySelectorAll('input[name="kit"]').forEach(r => r.checked = false);
       inputErr.style.display = 'none';
-      kitErr.style.display = 'none';
-      calcBtn.disabled = true;
-      resultEl.textContent = '--';
+      kitErr.style.display   = 'none';
+      calcBtn.disabled       = true;
+      resultEl.textContent   = '--';
       resultUnit.textContent = ' nmol/L';
     }
 
+    // イベント登録
     inputEl.addEventListener('input', refreshButtonState);
-    document.querySelectorAll('input[name="kit"]').forEach(el => el.addEventListener('change', refreshButtonState));
+    document.querySelectorAll('input[name="kit"]').forEach(el =>
+      el.addEventListener('change', refreshButtonState)
+    );
     calcBtn.addEventListener('click', calculate);
     clearBtn.addEventListener('click', clearForm);
   </script>
