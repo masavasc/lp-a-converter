@@ -277,7 +277,6 @@
       const x   = parseFloat(inputEl.value);
       const kit = document.querySelector('input[name="kit"]:checked').value;
       const raw = kitFormulas[kit](x);
-      resultEl.textContent = raw.toFixed(2);
   // ここから追加
    let displayValue;
   if (raw <= 0.6) {
