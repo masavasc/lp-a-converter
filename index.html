@@ -278,6 +278,15 @@
       const kit = document.querySelector('input[name="kit"]:checked').value;
       const raw = kitFormulas[kit](x);
       resultEl.textContent = raw.toFixed(2);
+         const raw = kitFormulas[kit](x);
++   // ここから追加
++   let displayValue;
++   if (raw <= 0.6) {
++     displayValue = '0.6未満';
++   } else {
++     displayValue = raw.toFixed(2);
++   }
++   resultEl.textContent = displayValue;
       resultUnit.textContent = kitUnits[kit];
     }
 
