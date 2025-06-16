@@ -189,9 +189,9 @@
           <legend>検査キットを選択</legend>
           <div class="kit-grid">
             <label><input type="radio" name="kit" value="kitA">Sekisui</label>
-            <label><input type="radio" name="kit" value="kitB">Denka-1</label>
-            <label><input type="radio" name="kit" value="kitC">Nittobo</label>
-            <label><input type="radio" name="kit" value="kitD">Roche</label>
+            <label><input type="radio" name="kit" value="kitB">Denka（国内）</label>
+            <label><input type="radio" name="kit" value="kitC">Denka（海外）</label>
+            <label><input type="radio" name="kit" value="kitD">Nittobo</label>
           </div>
         </fieldset>
         <p id="kitError" class="error">キットを選択してください</p>
@@ -208,7 +208,7 @@
 
     <!-- 注意書き -->
     <p class="disclaimer">
-   標準値が0.6以下の場合は「0.6未満」と表示されます。 <br>
+   　　標準値が0.6以下の場合は「0.6未満」と表示されます。 <br>
      
     </p>
 
@@ -224,8 +224,8 @@
     const kitFormulas = {
       kitA: x => 3.77 * x - 2.39,
       kitB: x => 2.04 * x - 2.77,
-      kitC: x => 2.40 * x - 8.64,
-      kitD: x => 0.75 * x + 1.11
+      kitC: x => 2.08 * x - 2.73,
+      kitD: x => 2.40 * x - 8.64,
     };
     // 出力単位（すべて nmol/L）
     const kitUnits = {
